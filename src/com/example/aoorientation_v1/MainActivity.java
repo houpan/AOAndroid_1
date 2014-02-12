@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements SensorEventListener{
 		    	if(isDataAvalible){
 		    		overallCount +=1;
 		    		try {
-						Thread.sleep(5);
+						Thread.sleep(200);
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -72,14 +72,15 @@ public class MainActivity extends Activity implements SensorEventListener{
 			        Log.e("houpan",requestJSON.toString());
 		    		
 					final String CODEPAGE = "UTF-8";
-					HttpPost httpPostRequest = new HttpPost("http://54.250.127.255:5566/COMMAND_FROM_ANDROID");
-
+					//HttpPost httpPostRequest = new HttpPost("http://54.250.127.255:5566/COMMAND_FROM_ANDROID");
+					HttpPost httpPostRequest = new HttpPost("http://140.112.30.33:5566/COMMAND_FROM_ANDROID");
+					
 			        
 					try {
 				        httpPostRequest.setHeader("Accept", "application/json");            
 				        httpPostRequest.setHeader("Content-type", "application/json");
-//						httpPostRequest.setEntity(new StringEntity(requestJSON.toString(), CODEPAGE));
-						httpPostRequest.setEntity(new StringEntity("01234567890", CODEPAGE));
+						httpPostRequest.setEntity(new StringEntity(requestJSON.toString(), CODEPAGE));
+//						httpPostRequest.setEntity(new StringEntity("0", CODEPAGE));
 					} catch (UnsupportedEncodingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
