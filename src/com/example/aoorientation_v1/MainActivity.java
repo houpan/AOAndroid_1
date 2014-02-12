@@ -25,7 +25,9 @@ import android.widget.TextView;
 		
 public class MainActivity extends Activity implements SensorEventListener{
 			
-	
+	public int overallCount = 0;
+	public int localOverallCount = 0;	
+	public TextView overallCountText;
 
 	Handler handler = new Handler(){
 	    @Override
@@ -38,17 +40,18 @@ public class MainActivity extends Activity implements SensorEventListener{
 	};
 	
 	Runnable runnable = new Runnable(){
+		
 	    @Override
 	    public void run() {
 	        //
 	        // TODO: http request.
 	        //
-	    	int overallCount = 0;
+
 	    	while(true){
 		    	if(isDataAvalible){
 		    		overallCount +=1;
 		    		try {
-						Thread.sleep(50);
+						Thread.sleep(5);
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -70,12 +73,13 @@ public class MainActivity extends Activity implements SensorEventListener{
 		    		
 					final String CODEPAGE = "UTF-8";
 					HttpPost httpPostRequest = new HttpPost("http://54.250.127.255:5566/COMMAND_FROM_ANDROID");
-					
+
 			        
 					try {
 				        httpPostRequest.setHeader("Accept", "application/json");            
 				        httpPostRequest.setHeader("Content-type", "application/json");
-						httpPostRequest.setEntity(new StringEntity(requestJSON.toString(), CODEPAGE));
+//						httpPostRequest.setEntity(new StringEntity(requestJSON.toString(), CODEPAGE));
+						httpPostRequest.setEntity(new StringEntity("01234567890", CODEPAGE));
 					} catch (UnsupportedEncodingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -96,11 +100,32 @@ public class MainActivity extends Activity implements SensorEventListener{
 			        Bundle data = new Bundle();
 			        data.putString("value","ｒｅｓｕｌｔ");
 			        msg.setData(data);
-			        handler.sendMessage(msg);
+//			        handler.sendMessage(msg);
 		    	}	    		
 	    	}
 
 	    }
+	};
+	Runnable runnableCount = new Runnable(){
+		
+	    @Override
+	    public void run() {
+	        //
+	        // TODO: http request.
+	        //
+
+	    	while(true){
+	    			localOverallCount +=1;
+		    		
+		    		try {
+						Thread.sleep(5);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+	    	}	    		
+    	}
 	};
 	
 
@@ -126,11 +151,14 @@ public class MainActivity extends Activity implements SensorEventListener{
 		
 		isDataAvalible = false;
 	    new Thread(runnable).start();
+	    new Thread(runnableCount).start();
+	    
 
 
 		readingAzimuth = (TextView)findViewById(R.id.azimuth);
 		readingPitch = (TextView)findViewById(R.id.pitch);
 		readingRoll = (TextView)findViewById(R.id.roll);
+		overallCountText = (TextView)findViewById(R.id.count);
 		
 		sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 		sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -219,16 +247,15 @@ public class MainActivity extends Activity implements SensorEventListener{
 			azimuthParsed = azimuthParsed * lowpassAlpha + (azimuthParsed * (1.0 - lowpassAlpha));
 			pitchParsed = pitchParsed * lowpassAlpha + (pitchParsed * (1.0 - lowpassAlpha));
 			rollParsed = rollParsed * lowpassAlpha + (rollParsed * (1.0 - lowpassAlpha));
-			
-			
+						
+
 			readingAzimuth.setText("Azimuth: " + String.valueOf(azimuthParsed));
 			readingPitch.setText("Pitch: " + String.valueOf(pitchParsed));
 			readingRoll.setText("Roll: " + String.valueOf(rollParsed));
-					
-			isDataAvalible = true; 
+	    	overallCountText.setText("Count: " + String.valueOf(overallCount)+",   local:"+localOverallCount);
 
-			
-		}
-				
+					
+			isDataAvalible = true; 			
+		}				
 	}
 }
